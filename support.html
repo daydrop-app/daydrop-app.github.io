@@ -180,16 +180,21 @@
         }),
       });
 
-      if (res.ok || res.status === 201) {
+      if (res.ok) {
         document.getElementById('form-section').style.display = 'none';
         document.getElementById('success').style.display = 'block';
       } else {
-        throw new Error('Failed');
+        const errText = await res.text();
+        console.error('Supabase error:', res.status, errText);
+        throw new Error(errText);
       }
-    } catch {
+    } catch (err) {
+      console.error('Submit error:', err);
       btn.textContent = 'Send ticket →';
       btn.disabled = false;
-      window.location.href = `mailto:hstransit1@gmail.com?subject=${encodeURIComponent('[Daydrop] ' + subject)}&body=${encodeURIComponent(body)}`;
+      const mailSubject = encodeURIComponent('[Daydrop Support] ' + subject);
+      const mailBody = encodeURIComponent(`Category: ${selectedCategory}\nEmail: ${email}\n\n${body}`);
+      window.location.href = `mailto:hstransit1@gmail.com?subject=${mailSubject}&body=${mailBody}`;
     }
   });
 </script>
